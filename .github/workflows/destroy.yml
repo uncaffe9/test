@@ -29,4 +29,4 @@ jobs:
         run: terraform init
 
       - name: Terraform Destroy
-        run: terraform destroy -auto-approve
+        run: terraform destroy -auto-approve -var="iam_user_names=${{ steps.get_outputs.outputs.iam_user_names }}" -var="iam_group_name=${{ steps.get_outputs.outputs.iam_group_name }}"
