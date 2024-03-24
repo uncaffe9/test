@@ -10,7 +10,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
@@ -19,50 +19,22 @@ jobs:
     - name: Terraform Init
       run: terraform init
 
-  plan_iam_user:
+  plan:
     needs: init
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Terraform Plan IAM User
-      run: terraform plan -out=tfplan_iam_user
-      working-directory: modules/iam_user
+    - name: Terraform Plan
+      run: |
+        terraform plan -out=tfplan_iam_user -input=false modules/iam_user
+        terraform plan -out=tfplan_iam_group -input=false modules/iam_group
 
-  plan_iam_group:
-    needs: init
+  apply:
+    needs: plan
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Terraform Plan IAM Group
-      run: terraform plan -out=tfplan_iam_group
-      working-directory: modules/iam_group
-
-  apply_iam_user:
-    needs: plan_iam_user
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Terraform Apply IAM User
-      run: terraform apply -auto-approve tfplan_iam_user
-      working-directory: modules/iam_user
-
-  apply_iam_group:
-    needs: plan_iam_group
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Terraform Apply IAM Group
-      run: terraform apply -auto-approve tfplan_iam_group
-      working-directory: modules/iam_group
+    - name: Terraform Apply
+      run: |
+        terraform apply -auto-approve tfplan_iam_user
+        terraform apply -auto-approve tfplan_iam_group
