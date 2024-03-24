@@ -29,6 +29,7 @@ jobs:
       
     - name: Terraform Plan
       run: terraform plan -out=tfplan
+      working-directory: modules  # Adjust the working directory to match your module directory
 
   apply:
     needs: plan
@@ -40,3 +41,4 @@ jobs:
       
     - name: Terraform Apply
       run: terraform apply -auto-approve tfplan
+      working-directory: modules  # Adjust the working directory to match your module directory
