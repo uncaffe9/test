@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  terraform:
+  init:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,8 +19,24 @@ jobs:
     - name: Terraform Init
       run: terraform init
 
+  plan:
+    needs: init
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
     - name: Terraform Plan
       run: terraform plan -out=tfplan
 
+  apply:
+    needs: plan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
     - name: Terraform Apply
       run: terraform apply -auto-approve tfplan
