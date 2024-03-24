@@ -3,6 +3,10 @@ name: Terraform Workflow
 on:
   workflow_dispatch:
 
+env:
+  TF_VAR_aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  TF_VAR_aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 jobs:
   init:
     runs-on: ubuntu-latest
@@ -10,7 +14,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-
+      
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
@@ -24,17 +28,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
     - name: Terraform Plan
-      run: |
-        terraform plan -out=tfplan_iam_user -input=false modules/iam_user
-        terraform plan -out=tfplan_iam_group -input=false modules/iam_group
+      run: terraform plan -out=tfplan
 
   apply:
     needs: plan
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
     - name: Terraform Apply
-      run: |
-        terraform apply -auto-approve tfplan_iam_user
-        terraform apply -auto-approve tfplan_iam_group
+      run: terraform apply -auto-approve tfplan
